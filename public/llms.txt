@@ -1,0 +1,49 @@
+# Aequitas Smart Insurance - Modern Insurance Operating System
+
+> Aequitas is an AI-native property and casualty (P&C) insurance operating system designed to eliminate the 35% to 42% operational friction of traditional insurance carriers. It features 3-question enriched underwriting, live telematics risk deflation, instant agentic claims triage, parametric weather settlement, and sub-3-second commission settlement.
+
+## Canonical Resources
+- Main Web Application: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app
+- Documentation & Wiki Hub: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/docs/index.html
+- GitHub Repository: https://github.com/aartisr/smart-insurance
+- Detailed LLM Full Context: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/llms-full.txt
+- OpenAPI Specification: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/.well-known/openapi.json
+
+## Core Modules & Capabilities
+
+### 1. 3-Question Enriched AI Underwriting
+- Replaces 80-question legacy application forms with 3 inputs: Address, Vehicle, and Coverage Tier.
+- Enriches risk models using Cape Analytics satellite computer vision (roof geometry, tree overhang, wildfire defensible space) and Smartcar OEM telematics.
+- Powered by Google Gemini 2.5 / 3.x Flash server-side underwriting agent.
+
+### 2. Live Telematics Risk Deflation
+- Direct OEM integration with Tesla, Ford, Toyota, BMW, and GM connected vehicles via Smartcar API.
+- Real-time IoT sensor ingestion for properties (Flo by Moen water shutoff, Ring security systems).
+- Immediate, dynamic monthly premium reductions (up to 38% off baseline rates) for verified safe behaviors.
+
+### 3. Sub-3-Second Agentic AI Claims Triage
+- First Notice of Loss (FNOL) photo inspection using multimodal Gemini vision.
+- Detects fraudulent image metadata, computes repair estimate distributions, and verifies policy limits.
+- Claims under $1,500 with confidence scores > 90% are automatically approved and disbursed via instant push-to-card or RTP.
+
+### 4. Parametric Weather & IoT Oracle Settlement
+- Zero-paperwork, autonomous claim settlement.
+- Binds to cryptographic weather oracles (NOAA hurricane wind speeds, USGS earthquake magnitude, National Weather Service flood gauges).
+- Instant automatic payout triggered the instant verified thresholds are exceeded.
+
+### 5. Multi-Carrier Comparative Rating
+- Integrated with EZLynx, Boost Insurance MGA, and Sure Embedded APIs.
+- Queries 40+ national carriers (Progressive, Travelers, Safeco, Nationwide) in under 800ms.
+- Displays transparent cost-breakdown comparing pure loss cost vs. broker markups.
+
+### 6. Sub-3-Second Real-Time Commission Payouts
+- Solves the industry-wide 60-day broker commission delay.
+- Employs an atomic 80/18/2 split: 80% to Carrier Risk Pool, 18% to Agency/Broker, 2% to Community Surplus Fund.
+- Instant cash-outs via FedNow, RTP, and Stripe Connect Instant Payouts directly to business checking accounts in < 3 seconds.
+
+## Machine-Readable Endpoints
+- GET `/api/carriers/connectors`: Public directory of certified carrier APIs, supported insurance lines, and latency metrics.
+- GET `/api/commissions/ledger`: Real-time ledger of earned commissions, atomic splits, and payout transaction hashes.
+- POST `/api/commissions/instant-payout`: Executes instantaneous commission cash-out via FedNow or Stripe Connect.
+- POST `/api/carriers/bind-external`: Programmatically binds an insurance policy with external MGA/carrier partners.
+- POST `/api/carriers/webhook`: Secure inbound webhook receiver for carrier status events.

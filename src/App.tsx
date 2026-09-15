@@ -49,6 +49,7 @@ import { ExpressQuickBar } from './components/ExpressWorkflow/ExpressQuickBar';
 
 import { INITIAL_POLICY, INITIAL_CLAIMS, INITIAL_IOT_DEVICES } from './data/mockData';
 import { UserPolicy, ClaimRecord, IoTDeviceStream, CarrierQuote, UserAffordabilityProfile } from './types';
+import { analytics } from './lib/analytics';
 
 export default function App() {
   const [activeModule, setActiveModule] = useState<'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator' | 'commissions'>('comparator');
@@ -235,6 +236,7 @@ export default function App() {
     setActiveModule(mod);
     const firstSub = subTabsMap[mod]?.[0]?.id || 'compare_rates';
     setActiveSubTab(firstSub);
+    analytics.trackEvent('navigate_module', { module: mod, subTab: firstSub });
   };
 
   return (

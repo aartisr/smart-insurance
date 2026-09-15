@@ -1,0 +1,44 @@
+# Aequitas Smart Insurance Operating System - Comprehensive Architecture & Protocol Specification
+
+## 1. System Identity & Mission
+Aequitas is an open-architecture, AI-native insurance engine engineered to replace traditional property & casualty broker markups with cryptographic and algorithmic automation. Traditional insurance carriers operate with a 35% to 42% expense ratio:
+- 15% to 20% in broker sales commissions and aggregator placement fees.
+- 12% to 15% in administrative back-office, paper underwriting, and manual policy servicing.
+- 8% to 10% in manual adjusters, legal defense dispute overhead, and friction.
+
+Aequitas compresses operational expenses to under 4% by running automated agents for underwriting, telematics ingestion, claims validation, and instant payment settlement.
+
+## 2. Underwriting Engine & Gemini Vision Processing
+The underwriting subsystem operates via server-side Google Gemini models:
+- Image & Aerial Audit: Performs parcel roof geometry classification (hip vs. gable vs. flat), granular tile wear detection, pool enclosure verification, and wildland-urban interface (WUI) defensible space measurement.
+- Actuarial Math: Base rate calculation follows pure risk cost plus a transparent flat SaaS operational margin (2%).
+- Autonomous Policy Generator: Synthesizes plain-language coverage contracts translated into Grade 6 readability, eliminating traditional dense legal exclusions.
+
+## 3. Real-Time Telematics & IoT Risk Deflation
+- Vehicle Telematics: Connects with OEM vehicle clouds via Smartcar API. Directly reads vehicle odometer, braking event frequency, night-time driving ratios, and battery management status. High-scoring drivers receive immediate premium deflation up to 38%.
+- Property Telematics: Integrates with smart water telemetry (Flo by Moen, Phyn) and security sensors (Ring, SimpliSafe). Active automatic shutoff valves trigger an immediate 15% discount on water peril coverage.
+
+## 4. Parametric Insurance Settlement Protocol
+The parametric settlement pipeline operates without adjusters or manual paperwork:
+- Triggers: Binds to public and private oracles (NOAA National Hurricane Center, USGS Earthquakes, OpenWeatherMap, connected flood sensors).
+- Settlement: When an oracle signs an event exceeding the parametric index (e.g. sustained wind speed > 110 mph within 5 miles of coordinates), the smart policy triggers automated payout directly into the insured party's bank account in under 60 seconds.
+
+## 5. Instant Commission Disbursement & Banking Rails
+- 80/18/2 Atomic Split: When gross premium is charged, the engine instantly computes:
+  - 80.0% to Carrier Underwriting Risk Pool.
+  - 18.0% to Digital Agency / Broker Commission Balance.
+  - 2.0% to Community Surplus Fund (distributed annually to policyholders with zero claims).
+- Instant Payouts: Balances in the commission ledger can be withdrawn in real-time via:
+  - FedNow / Real-Time Payments (RTP): Instant clearing in under 1.5 seconds with zero transaction fees.
+  - Stripe Connect Instant Payouts: Dispatched to Visa Direct or Mastercard Send in under 3.0 seconds.
+
+## 6. Regulatory & Carrier Integration Strategy
+- Embedded MGA Partnerships: Boost Insurance API and Sure Embedded Platform provide digital-native A-rated paper across Auto, Home, Renters, and Cyber.
+- Comparative Rating Engines: EZLynx API provides live B2B comparative quotes across 40+ national carriers with single-sign-on binding workflows.
+- Lead & Technology Pass-Through: Allows instant monetization via MediaAlpha, EverQuote, and QuinStreet lead networks without state producer license prerequisites.
+
+## 7. Canonical Links
+- Main App: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app
+- Docs Hub: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/docs/index.html
+- GitHub Repository: https://github.com/aartisr/smart-insurance
+- Sitemap: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/sitemap.xml

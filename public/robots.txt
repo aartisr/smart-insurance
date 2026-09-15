@@ -1,0 +1,59 @@
+# ==============================================================================
+# Aequitas Smart Insurance - Universal Search & AI Indexing Directives
+# Optimized for: Google, Bing, Perplexity, OpenAI, Anthropic, Apple Intelligence
+# ==============================================================================
+
+User-agent: *
+Allow: /
+Allow: /api/carriers/connectors
+Allow: /api/commissions/ledger
+Allow: /api/agent/manifest
+Allow: /docs/
+Allow: /sitemap.xml
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /dist/
+
+# ------------------------------------------------------------------------------
+# Generative AI, Answer Engine & Overviews Spiders (AEO / AIO / AXO Optimization)
+# ------------------------------------------------------------------------------
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+# ------------------------------------------------------------------------------
+# Universal Sitemaps & LLM Context Manifests
+# ------------------------------------------------------------------------------
+Sitemap: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/sitemap.xml
+Sitemap: https://aartisr.github.io/smart-insurance/sitemap.xml
+LLMs-Txt: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/llms.txt
+LLMs-Full-Txt: https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/llms-full.txt

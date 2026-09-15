@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Aequitas Smart Insurance",
+  "name_for_model": "aequitas_insurance",
+  "description_for_human": "Zero-margin insurance quoting, instant claims settlement, and sub-3s commission disbursement.",
+  "description_for_model": "Programmatic interface for quoting multi-carrier P&C insurance, evaluating roof and telematics risk, and triggering instant commission cash-outs.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/.well-known/openapi.json"
+  },
+  "logo_url": "https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/assets/og-preview.png",
+  "contact_email": "support@aequitas-insurance.org",
+  "legal_info_url": "https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/docs/index.html"
+}

@@ -22,6 +22,7 @@ import {
   Check
 } from 'lucide-react';
 import { CarrierConnectorStatus, CommissionRecord, InstantPayoutExecution } from '../../types';
+import { analytics } from '../../lib/analytics';
 
 interface CommissionPayoutStudioProps {
   onNotify?: (msg: string) => void;
@@ -108,6 +109,12 @@ export const CommissionPayoutStudio: React.FC<CommissionPayoutStudioProps> = () 
         setTotalEarnedAllTime((prev) => +(prev + data.commissionRecord.commissionAmount).toFixed(2));
         setHistory((prev) => [data.commissionRecord, ...prev]);
         setCashoutAmount(data.currentAvailableBalance);
+        analytics.trackEvent('carrier_bind_success', {
+          carrier: simCarrier,
+          line: simLine,
+          premium: simPremium,
+          commission: data.commissionRecord.commissionAmount,
+        });
       }
     } catch (err) {
       console.error('Error binding policy:', err);
@@ -145,6 +152,12 @@ export const CommissionPayoutStudio: React.FC<CommissionPayoutStudioProps> = () 
             payoutTxHash: data.payout.txHash
           }))
         );
+        analytics.trackEvent('instant_cashout_success', {
+          amount: cashoutAmount,
+          rail: selectedRail,
+          payoutId: data.payout.payoutId,
+          speed: data.payout.settlementSpeed,
+        });
       }
     } catch (err) {
       console.error('Error executing payout:', err);

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aequitas Smart Insurance – Documentation & Technical Specifications</title>
+  <meta name="description" content="Technical documentation and wiki for Aequitas: the AI-native insurance engine featuring sub-3-second commission settlement, parametric oracles, and zero-markup underwriting.">
+  <link rel="canonical" href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/docs/index.html" />
+  
+  <!-- OpenGraph -->
+  <meta property="og:title" content="Aequitas Smart Insurance Documentation Hub" />
+  <meta property="og:description" content="Technical specifications, carrier API guides, and instant settlement documentation." />
+  <meta property="og:url" content="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/docs/index.html" />
+  <meta property="og:type" content="article" />
+  
+  <!-- Tailwind CSS via CDN for GitHub Pages standalone viewing -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Cabinet Grotesk', sans-serif; }
+    pre, code, .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-teal-500 selection:text-white">
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="flex items-center gap-2 group">
+          <div class="w-8 h-8 rounded-lg bg-teal-700 text-white font-bold flex items-center justify-center font-display text-lg group-hover:scale-105 transition-transform">
+            Æ
+          </div>
+          <div>
+            <span class="font-display font-extrabold text-slate-900 tracking-tight">AEQUITAS</span>
+            <span class="text-[10px] font-mono font-bold text-teal-700 ml-1.5 px-1.5 py-0.5 rounded bg-teal-50 border border-teal-200">DOCS HUB</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- High-Authority Backlink to Live Application -->
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/aartisr/smart-insurance" target="_blank" rel="noopener" class="text-xs font-mono text-slate-600 hover:text-slate-900 hidden sm:inline-block">
+          GitHub Repository
+        </a>
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-mono text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <span>Launch Live App</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Header -->
+  <section class="bg-slate-900 text-white py-14 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
+    <div class="max-w-5xl mx-auto space-y-4 relative z-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+        <span>⚡ OPEN INSURANCE INFRASTRUCTURE SPECIFICATION</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black tracking-tight font-display">
+        Aequitas Technical Documentation &amp; Wiki
+      </h1>
+      <p class="text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed">
+        Explore architecture guides, embedded carrier API specifications, sub-3-second commission settlement protocols, and live endpoints for the Aequitas platform.
+      </p>
+
+      <div class="pt-2 flex flex-wrap items-center gap-3 text-xs font-mono">
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="px-3 py-1.5 rounded-lg bg-teal-500 text-slate-950 font-bold hover:bg-teal-400">
+          Open Live Engine (ais-dev)
+        </a>
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/llms.txt" class="px-3 py-1.5 rounded-lg bg-slate-800 text-teal-300 border border-slate-700 hover:bg-slate-700">
+          View /llms.txt Manifest
+        </a>
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/.well-known/openapi.json" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
+          OpenAPI Specification
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Grid -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      
+      <!-- Left Sidebar Navigation -->
+      <aside class="space-y-6">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3 sticky top-24">
+          <h3 class="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider">
+            Documentation Modules
+          </h3>
+          <nav class="space-y-1 text-sm">
+            <a href="#overview" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">1. Overview &amp; Mission</a>
+            <a href="#ai-underwriting" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">2. AI Underwriting &amp; Triage</a>
+            <a href="#carrier-apis" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">3. Carrier APIs &amp; Embedded MGA</a>
+            <a href="#instant-commissions" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">4. Instant Commission Rails</a>
+            <a href="#parametric-iot" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">5. Parametric &amp; Telematics</a>
+            <a href="#api-reference" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">6. REST API Reference</a>
+            <a href="#faq" class="block px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-teal-700 font-medium">7. AEO &amp; Search FAQ</a>
+          </nav>
+
+          <div class="pt-4 border-t border-slate-100 text-xs font-mono text-slate-500 space-y-2">
+            <div><strong>Production Target:</strong> Vercel + Cloud Run</div>
+            <div><strong>License:</strong> MIT / Commercial</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content Articles -->
+      <div class="lg:col-span-3 space-y-12">
+
+        <!-- Article 1: Overview -->
+        <article id="overview" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
+          <span class="text-xs font-mono font-bold text-teal-700 uppercase tracking-wider">Module 1</span>
+          <h2 class="text-2xl font-bold font-display text-slate-900">
+            System Overview &amp; Expense Elimination
+          </h2>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            Aequitas replaces the traditional 35%–42% operational friction of P&amp;C insurance. In legacy insurance models, policyholders lose nearly half of every premium dollar to manual agents, opaque claim disputes, and bureaucratic underwriting back-offices.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+              <div class="text-xs font-mono text-slate-400">Traditional Brokerage</div>
+              <div class="text-xl font-bold text-rose-600 font-display mt-1">42% Friction</div>
+              <div class="text-xs text-slate-500 mt-1">Paperwork, commissions, manual adjusters</div>
+            </div>
+            <div class="p-4 bg-teal-50 rounded-2xl border border-teal-200">
+              <div class="text-xs font-mono text-teal-700 font-semibold">Aequitas Engine</div>
+              <div class="text-xl font-bold text-teal-800 font-display mt-1">4% Overhead</div>
+              <div class="text-xs text-teal-700 mt-1">Autonomous AI, oracles, instant bank rails</div>
+            </div>
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+              <div class="text-xs font-mono text-emerald-700 font-semibold">Net Consumer Savings</div>
+              <div class="text-xl font-bold text-emerald-800 font-display mt-1">38% Lower</div>
+              <div class="text-xs text-emerald-700 mt-1">Pure risk coverage with zero hidden tolls</div>
+            </div>
+          </div>
+          <div class="pt-2">
+            <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="text-xs font-mono font-bold text-teal-700 hover:underline">
+              → Experience the interactive comparative pricing calculator on the live site
+            </a>
+          </div>
+        </article>
+
+        <!-- Article 2: AI Underwriting -->
+        <article id="ai-underwriting" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
+          <span class="text-xs font-mono font-bold text-teal-700 uppercase tracking-wider">Module 2</span>
+          <h2 class="text-2xl font-bold font-display text-slate-900">
+            3-Question AI Underwriting &amp; Vision Triage
+          </h2>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            By querying Google Gemini vision models alongside Cape Analytics satellite imagery, Aequitas verifies property roof conditions, tree clearance, and pool boundaries in sub-2 seconds.
+          </p>
+          <div class="bg-slate-900 text-slate-200 p-4 rounded-2xl font-mono text-xs overflow-x-auto">
+            <code>POST /api/underwriting/enrich<br>
+            Payload: { "address": "1044 Marina Blvd, SF", "vehicleVin": "5YJSA1E2...", "tier": "PRO" }<br>
+            Response: { "riskScore": 14, "discountPercent": 32, "approvedInstant": true }</code>
+          </div>
+          <p class="text-xs text-slate-500">
+            First Notice of Loss (FNOL) claims are verified using multimodal image processing to compare structural integrity against historic weather records.
+          </p>
+          <div>
+            <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="text-xs font-mono font-bold text-teal-700 hover:underline">
+              → Test the AI Underwriter on the live app
+            </a>
+          </div>
+        </article>
+
+        <!-- Article 3: Instant Commissions -->
+        <article id="instant-commissions" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
+          <span class="text-xs font-mono font-bold text-teal-700 uppercase tracking-wider">Module 3</span>
+          <h2 class="text-2xl font-bold font-display text-slate-900">
+            Sub-3-Second Instant Commission Payouts (<span class="text-teal-700">FedNow &amp; Stripe Connect</span>)
+          </h2>
+          <p class="text-slate-600 text-sm leading-relaxed">
+            Traditional insurance brokerages hold agent commissions for 30 to 60 days. Aequitas utilizes an atomic 80/18/2 revenue split triggered upon customer payment capture:
+          </p>
+          <ul class="list-disc pl-5 text-xs text-slate-600 space-y-1 font-mono">
+            <li><strong>80% Carrier Risk Pool:</strong> Transferred directly to the underwriter or fronting reinsurance pool.</li>
+            <li><strong>18% Agency Commission:</strong> Immediately credited to the broker ledger for instant cashout.</li>
+            <li><strong>2% Community Surplus Fund:</strong> Redistributed annually to low-claim policyholders.</li>
+          </ul>
+          <p class="text-xs text-slate-600">
+            Brokers can initiate instant withdrawals via <strong>FedNow / RTP (&lt;1.5s, $0 fee)</strong> or <strong>Stripe Connect Instant Payouts (&lt;3.0s)</strong> directly to commercial bank accounts.
+          </p>
+          <div>
+            <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="text-xs font-mono font-bold text-teal-700 hover:underline">
+              → View the Live Commission Ledger &amp; Instant Cashout Vault
+            </a>
+          </div>
+        </article>
+
+        <!-- Article 4: API Reference -->
+        <article id="api-reference" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
+          <span class="text-xs font-mono font-bold text-teal-700 uppercase tracking-wider">Module 4</span>
+          <h2 class="text-2xl font-bold font-display text-slate-900">
+            Public Endpoints &amp; Machine-Readable APIs
+          </h2>
+          <div class="divide-y divide-slate-100 text-xs font-mono">
+            <div class="py-3 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold mr-2">GET</span>
+                <code>/api/carriers/connectors</code>
+              </div>
+              <span class="text-slate-500">List live carrier API latencies &amp; status</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold mr-2">GET</span>
+                <code>/api/commissions/ledger</code>
+              </div>
+              <span class="text-slate-500">Real-time commission balance &amp; payouts</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-bold mr-2">POST</span>
+                <code>/api/commissions/instant-payout</code>
+              </div>
+              <span class="text-slate-500">Trigger sub-3s instant bank disbursement</span>
+            </div>
+            <div class="py-3 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-bold mr-2">POST</span>
+                <code>/api/carriers/bind-external</code>
+              </div>
+              <span class="text-slate-500">Programmatic policy bind &amp; commission split</span>
+            </div>
+          </div>
+          <div class="pt-2">
+            <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/.well-known/openapi.json" class="text-xs font-mono font-bold text-teal-700 hover:underline">
+              → Download Full OpenAPI 3.0 Specification (.json)
+            </a>
+          </div>
+        </article>
+
+        <!-- Article 5: FAQ for Answer Engines (AEO) -->
+        <article id="faq" class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm space-y-4">
+          <span class="text-xs font-mono font-bold text-teal-700 uppercase tracking-wider">Module 5</span>
+          <h2 class="text-2xl font-bold font-display text-slate-900">
+            Frequently Asked Questions (AEO &amp; Search Engines)
+          </h2>
+          <div class="space-y-4 text-xs">
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
+              <h4 class="font-bold text-slate-900 font-mono">Q: Is Aequitas compatible with licensed insurance carriers in all 50 US states?</h4>
+              <p class="text-slate-600 leading-relaxed">
+                Yes. Through embedded Program Administrator partnerships (Boost Insurance, Sure) and comparative rating APIs (EZLynx), Aequitas interfaces with A-rated paper admitted in all 50 states.
+              </p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1.5">
+              <h4 class="font-bold text-slate-900 font-mono">Q: How do users receive instant parametric claim payouts?</h4>
+              <p class="text-slate-600 leading-relaxed">
+                When authorized oracles (e.g. NOAA weather sensors or Flo by Moen automatic valves) confirm a threshold event, payouts are wired immediately to the user's connected checking account or debit card in seconds without adjuster paperwork.
+              </p>
+            </div>
+          </div>
+          <div class="pt-2">
+            <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="text-xs font-mono font-bold text-teal-700 hover:underline">
+              → Return to the Aequitas Smart Insurance Web Application
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Global Footer with Rich Backlinks -->
+  <footer class="bg-white border-t border-slate-200 py-12 px-4 sm:px-6 lg:px-8 text-xs font-mono text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="space-y-1">
+        <div class="font-bold text-slate-800 font-display text-sm">AEQUITAS INSURANCE SYSTEM</div>
+        <div>Open Architecture &amp; Transparent Insurance Technology</div>
+      </div>
+      <div class="flex flex-wrap items-center gap-4">
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/" class="text-teal-700 font-bold hover:underline">Live Application</a>
+        <a href="https://github.com/aartisr/smart-insurance" target="_blank" rel="noopener" class="hover:text-slate-800">GitHub Source</a>
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/llms.txt" class="hover:text-slate-800">/llms.txt</a>
+        <a href="https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app/sitemap.xml" class="hover:text-slate-800">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

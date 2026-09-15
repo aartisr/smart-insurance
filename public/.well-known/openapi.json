@@ -1,0 +1,91 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Aequitas Smart Insurance API",
+    "description": "API specification for Aequitas transparent insurance underwriting, carrier connectors, claims triage, and instant commission settlements.",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://ais-dev-6wif5vkcbekrimpjj2ayl6-433861030990.us-east5.run.app"
+    }
+  ],
+  "paths": {
+    "/api/carriers/connectors": {
+      "get": {
+        "summary": "List live insurance carrier connectors and rating engines",
+        "operationId": "getCarrierConnectors",
+        "responses": {
+          "200": {
+            "description": "Active carrier connectors list"
+          }
+        }
+      }
+    },
+    "/api/commissions/ledger": {
+      "get": {
+        "summary": "Fetch real-time commission ledger and available balance",
+        "operationId": "getCommissionLedger",
+        "responses": {
+          "200": {
+            "description": "Current commission ledger and available balance"
+          }
+        }
+      }
+    },
+    "/api/commissions/instant-payout": {
+      "post": {
+        "summary": "Trigger sub-3-second instant commission cashout to bank account",
+        "operationId": "instantPayout",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number" },
+                  "rail": { "type": "string", "enum": ["FEDNOW_RTP", "STRIPE_INSTANT", "VISA_DIRECT"] },
+                  "destination": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payout dispatched successfully"
+          }
+        }
+      }
+    },
+    "/api/carriers/bind-external": {
+      "post": {
+        "summary": "Programmatically bind policy and disburse atomic commission",
+        "operationId": "bindExternalPolicy",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "carrierId": { "type": "string" },
+                  "customerName": { "type": "string" },
+                  "insuranceLine": { "type": "string" },
+                  "grossPremium": { "type": "number" },
+                  "commissionRate": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy bound and commission credited"
+          }
+        }
+      }
+    }
+  }
+}
