@@ -202,3 +202,47 @@ export interface UserAffordabilityProfile {
     hasSecurityAlarm: boolean;
   };
 }
+
+export interface CarrierConnectorStatus {
+  id: string;
+  name: string;
+  category: 'EMBEDDED_MGA' | 'RATING_AGGREGATOR' | 'SATELLITE_CV' | 'TELEMATICS_OEM' | 'PAYOUT_RAIL';
+  status: 'CONNECTED_LIVE' | 'STANDBY_READY' | 'MOCK_SANDBOX';
+  latencyMs: number;
+  supportedLines: string[];
+  commissionSharePercent: number;
+  instantPayoutSupported: boolean;
+  payoutTime: string;
+  apiDocsUrl: string;
+}
+
+export interface CommissionRecord {
+  id: string;
+  timestamp: string;
+  policyId: string;
+  customerName: string;
+  insuranceLine: InsuranceLineType;
+  carrierName: string;
+  grossPremium: number;
+  commissionRatePercent: number;
+  commissionAmount: number;
+  carrierUnderwritingPoolShare: number;
+  surplusGivebackShare: number;
+  payoutStatus: 'AVAILABLE' | 'PAID_OUT_INSTANT' | 'PROCESSING';
+  payoutMethod?: 'STRIPE_INSTANT' | 'FEDNOW_RTP' | 'VISA_DIRECT';
+  payoutTxHash?: string;
+  payoutDurationSeconds?: number;
+}
+
+export interface InstantPayoutExecution {
+  payoutId: string;
+  timestamp: string;
+  amount: number;
+  rail: 'FEDNOW_RTP' | 'STRIPE_INSTANT' | 'VISA_DIRECT';
+  destinationAccount: string;
+  settlementSpeed: string;
+  feeAmount: number;
+  txHash: string;
+  status: 'SUCCESS_INSTANT' | 'PENDING';
+}
+

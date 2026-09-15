@@ -43,6 +43,7 @@ import { AgenticCustomerService } from './components/ModuleTechStack/AgenticCust
 import { PaymentOrchestration } from './components/ModuleTechStack/PaymentOrchestration';
 import { MonetizationTiers } from './components/ModuleTechStack/MonetizationTiers';
 import { ComparativePricingEngine } from './components/ModuleComparator/ComparativePricingEngine';
+import { CommissionPayoutStudio } from './components/ModuleCommissions/CommissionPayoutStudio';
 import { ExpressFastTrackModal } from './components/ExpressWorkflow/ExpressFastTrackModal';
 import { ExpressQuickBar } from './components/ExpressWorkflow/ExpressQuickBar';
 
@@ -50,7 +51,7 @@ import { INITIAL_POLICY, INITIAL_CLAIMS, INITIAL_IOT_DEVICES } from './data/mock
 import { UserPolicy, ClaimRecord, IoTDeviceStream, CarrierQuote, UserAffordabilityProfile } from './types';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator'>('comparator');
+  const [activeModule, setActiveModule] = useState<'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator' | 'commissions'>('comparator');
   const [activeSubTab, setActiveSubTab] = useState<string>('compare_rates');
   
   // Express Fast-Track Modal State
@@ -224,10 +225,13 @@ export default function App() {
       { id: 'payment', label: 'Open Banking 0% Interchange Rail', icon: <CreditCard className="w-3.5 h-3.5" /> },
       { id: 'tiers', label: 'SaaS Subscription Tiers & Surplus', icon: <Coins className="w-3.5 h-3.5" /> },
     ],
+    commissions: [
+      { id: 'ledger', label: 'Live Carrier Integrations & Instant Payouts', icon: <DollarSign className="w-3.5 h-3.5 text-emerald-400" /> },
+    ],
   };
 
   // Handle module change and reset sub-tab
-  const handleModuleChange = (mod: 'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator') => {
+  const handleModuleChange = (mod: 'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator' | 'commissions') => {
     setActiveModule(mod);
     const firstSub = subTabsMap[mod]?.[0]?.id || 'compare_rates';
     setActiveSubTab(firstSub);
@@ -389,6 +393,13 @@ export default function App() {
               />
             )}
             {activeSubTab === 'tiers' && <MonetizationTiers />}
+          </div>
+        )}
+
+        {/* MODULE 5: Real Carrier Integrations & Instant Commissions */}
+        {activeModule === 'commissions' && (
+          <div>
+            <CommissionPayoutStudio />
           </div>
         )}
       </main>

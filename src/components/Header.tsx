@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { UserPolicy } from '../types';
 
-export type AppModule = 'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator';
+export type AppModule = 'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator' | 'commissions';
 
 interface HeaderProps {
   activeModule: AppModule;
@@ -70,6 +70,12 @@ export const Header: React.FC<HeaderProps> = ({
       label: '4. Tech Stack Rails', 
       badge: '0% Tolls',
       icon: <CreditCard className="w-4 h-4 text-amber-600" /> 
+    },
+    { 
+      id: 'commissions', 
+      label: '5. Commissions & Payouts', 
+      badge: 'Instant <3s',
+      icon: <DollarSign className="w-4 h-4 text-emerald-600" /> 
     },
   ];
 
