@@ -23,6 +23,26 @@ function getGeminiClient(): GoogleGenAI | null {
   });
 }
 
+// Resilient multi-model execution with automatic fallback on 503 high-demand or rate limits
+async function safeGenerateContent(ai: GoogleGenAI, requestConfig: any): Promise<any | null> {
+  const models = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
+  for (const model of models) {
+    try {
+      const resp = await ai.models.generateContent({
+        ...requestConfig,
+        model,
+      });
+      if (resp && resp.text) {
+        return JSON.parse(resp.text);
+      }
+    } catch {
+      // Gracefully attempt next model in tier
+      continue;
+    }
+  }
+  return null;
+}
+
 // Health check
 app.get("/api/health", (_req, res) => {
   res.json({
@@ -40,8 +60,7 @@ app.post("/api/underwrite/enrich", async (req, res) => {
     const ai = getGeminiClient();
 
     if (ai) {
-      try {
-        const prompt = `You are the underwriting intelligence core for Aequitas, a Nobel-Tier zero-margin insurance engine.
+      const prompt = `You are the underwriting intelligence core for Aequitas, a Nobel-Tier zero-margin insurance engine.
 Given the following customer intake:
 - Asset Type: ${assetType || "Home & Property"}
 - Location/Address/ID: ${address || identifier || "742 Evergreen Terrace, Springfield"}
@@ -50,39 +69,34 @@ Given the following customer intake:
 Perform instant geospatial risk assessment, public municipal data enrichment (satellite roof condition, seismic fault proximity, 100-year flood zone status, smart municipal grid reliability), calculate estimated base actuarial premium, dynamic risk discount factors, and giveback allocation (fixed 20% operating fee + 80% user surplus & claim pool).
 Respond strictly in JSON matching the schema.`;
 
-        const response = await ai.models.generateContent({
-          model: "gemini-3.8-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                propertyScore: { type: Type.NUMBER, description: "Risk score 0-100 where 100 is safest" },
-                geospatialRiskLevel: { type: Type.STRING, description: "LOW, MODERATE, ELEVATED, EXTREME" },
-                satelliteRoofCondition: { type: Type.STRING },
-                wildfireProximityMiles: { type: Type.NUMBER },
-                floodZoneRating: { type: Type.STRING },
-                calculatedBaseMonthly: { type: Type.NUMBER },
-                recommendedMonthly: { type: Type.NUMBER },
-                annualRebatePotential: { type: Type.NUMBER },
-                enrichmentSources: {
-                  type: Type.ARRAY,
-                  items: { type: Type.STRING },
-                },
-                actuarialNotes: { type: Type.STRING },
+      const parsed = await safeGenerateContent(ai, {
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              propertyScore: { type: Type.NUMBER, description: "Risk score 0-100 where 100 is safest" },
+              geospatialRiskLevel: { type: Type.STRING, description: "LOW, MODERATE, ELEVATED, EXTREME" },
+              satelliteRoofCondition: { type: Type.STRING },
+              wildfireProximityMiles: { type: Type.NUMBER },
+              floodZoneRating: { type: Type.STRING },
+              calculatedBaseMonthly: { type: Type.NUMBER },
+              recommendedMonthly: { type: Type.NUMBER },
+              annualRebatePotential: { type: Type.NUMBER },
+              enrichmentSources: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
               },
-              required: ["propertyScore", "geospatialRiskLevel", "calculatedBaseMonthly", "recommendedMonthly", "annualRebatePotential"],
+              actuarialNotes: { type: Type.STRING },
             },
+            required: ["propertyScore", "geospatialRiskLevel", "calculatedBaseMonthly", "recommendedMonthly", "annualRebatePotential"],
           },
-        });
+        },
+      });
 
-        const parsed = JSON.parse(response.text || "{}");
-        if (parsed && parsed.propertyScore) {
-          return res.json({ success: true, data: parsed });
-        }
-      } catch (aiErr) {
-        console.warn("[Underwrite Enrich] Gemini AI unavailable or busy, using deterministic actuarial fallback:", aiErr);
+      if (parsed && parsed.propertyScore) {
+        return res.json({ success: true, data: parsed });
       }
     }
 
@@ -129,10 +143,9 @@ app.post("/api/claims/triage", async (req, res) => {
     const ai = getGeminiClient();
 
     if (ai) {
-      try {
-        const parts: any[] = [
-          {
-            text: `You are the Aequitas Agentic Claims Triage Engine. Process this micro-claim in real time.
+      const parts: any[] = [
+        {
+          text: `You are the Aequitas Agentic Claims Triage Engine. Process this micro-claim in real time.
 Claim Category: ${category || "General Damage"}
 Claim Narrative: ${claimDescription}
 Claimant Declared Loss: $${estimatedLoss || 450}
@@ -144,51 +157,46 @@ Analyze the situation (and image if present) for:
 3. Cryptographic fraud anomaly score (0-100 where 0 = clear genuine claim, 100 = blatant fraud/AI generated image/recycled claim).
 4. Automated approval status (APPROVED_INSTANT_RTP, FLAGGED_FOR_PEER_REVIEW, REJECTED).
 5. Detailed forensic findings and RTP transfer confirmation code.`,
-          },
-        ];
+        },
+      ];
 
-        if (imageData && typeof imageData === "string" && imageData.startsWith("data:")) {
-          const matches = imageData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-          if (matches && matches.length === 3) {
-            parts.unshift({
-              inlineData: {
-                mimeType: matches[1],
-                data: matches[2],
-              },
-            });
-          }
-        }
-
-        const response = await ai.models.generateContent({
-          model: "gemini-3.8-flash",
-          contents: { parts },
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                decision: { type: Type.STRING, description: "APPROVED_INSTANT_RTP, ESCALATE_SPECIALIST, DENIED" },
-                payoutAmount: { type: Type.NUMBER },
-                fraudAnomalyScore: { type: Type.NUMBER, description: "0 to 100" },
-                damageSeverity: { type: Type.STRING, description: "MINOR, MODERATE, SEVERE" },
-                processingLatencyMs: { type: Type.NUMBER },
-                computerVisionAnalysis: { type: Type.STRING },
-                cryptographicHash: { type: Type.STRING },
-                settlementSpeed: { type: Type.STRING },
-                rtpTransferId: { type: Type.STRING },
-                reasoningExplanation: { type: Type.STRING },
-              },
-              required: ["decision", "payoutAmount", "fraudAnomalyScore", "damageSeverity", "computerVisionAnalysis", "reasoningExplanation"],
+      if (imageData && typeof imageData === "string" && imageData.startsWith("data:")) {
+        const matches = imageData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        if (matches && matches.length === 3) {
+          parts.unshift({
+            inlineData: {
+              mimeType: matches[1],
+              data: matches[2],
             },
-          },
-        });
-
-        const parsed = JSON.parse(response.text || "{}");
-        if (parsed && parsed.decision) {
-          return res.json({ success: true, triage: parsed });
+          });
         }
-      } catch (aiErr) {
-        console.warn("[Claims Triage] Gemini AI unavailable or busy, using deterministic triage fallback:", aiErr);
+      }
+
+      const parsed = await safeGenerateContent(ai, {
+        contents: { parts },
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              decision: { type: Type.STRING, description: "APPROVED_INSTANT_RTP, ESCALATE_SPECIALIST, DENIED" },
+              payoutAmount: { type: Type.NUMBER },
+              fraudAnomalyScore: { type: Type.NUMBER, description: "0 to 100" },
+              damageSeverity: { type: Type.STRING, description: "MINOR, MODERATE, SEVERE" },
+              processingLatencyMs: { type: Type.NUMBER },
+              computerVisionAnalysis: { type: Type.STRING },
+              cryptographicHash: { type: Type.STRING },
+              settlementSpeed: { type: Type.STRING },
+              rtpTransferId: { type: Type.STRING },
+              reasoningExplanation: { type: Type.STRING },
+            },
+            required: ["decision", "payoutAmount", "fraudAnomalyScore", "damageSeverity", "computerVisionAnalysis", "reasoningExplanation"],
+          },
+        },
+      });
+
+      if (parsed && parsed.decision) {
+        return res.json({ success: true, triage: parsed });
       }
     }
 
@@ -222,8 +230,7 @@ app.post("/api/policy/translate", async (req, res) => {
     const ai = getGeminiClient();
 
     if (ai) {
-      try {
-        const prompt = `You are the plain-language legal translator for Aequitas Insurance Engine.
+      const prompt = `You are the plain-language legal translator for Aequitas Insurance Engine.
 Translate the following dense insurance policy / clause into an ultra-transparent, 100% jargon-free interactive breakdown.
 Policy Type: ${policyType || "Homeowners & Hazard HO-3 / Comprehensive"}
 Input Text:
@@ -238,64 +245,59 @@ Analyze exactly:
 
 Respond strictly in JSON matching the schema.`;
 
-        const response = await ai.models.generateContent({
-          model: "gemini-3.8-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                plainEnglishSummary: { type: Type.STRING },
-                coveredItems: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      title: { type: Type.STRING },
-                      plainDescription: { type: Type.STRING },
-                      limitAdvice: { type: Type.STRING },
-                    },
-                    required: ["title", "plainDescription"],
+      const parsed = await safeGenerateContent(ai, {
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              plainEnglishSummary: { type: Type.STRING },
+              coveredItems: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    title: { type: Type.STRING },
+                    plainDescription: { type: Type.STRING },
+                    limitAdvice: { type: Type.STRING },
                   },
+                  required: ["title", "plainDescription"],
                 },
-                uncoveredExclusions: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      title: { type: Type.STRING },
-                      reasonWhy: { type: Type.STRING },
-                      workaroundRider: { type: Type.STRING },
-                    },
-                    required: ["title", "reasonWhy"],
-                  },
-                },
-                hiddenTrapsAndGotchas: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      clauseRef: { type: Type.STRING },
-                      howCarriersTrickYou: { type: Type.STRING },
-                      howAequitasFixesIt: { type: Type.STRING },
-                    },
-                    required: ["clauseRef", "howCarriersTrickYou", "howAequitasFixesIt"],
-                  },
-                },
-                transparencyScore: { type: Type.NUMBER, description: "1 to 100" },
               },
-              required: ["plainEnglishSummary", "coveredItems", "uncoveredExclusions", "hiddenTrapsAndGotchas", "transparencyScore"],
+              uncoveredExclusions: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    title: { type: Type.STRING },
+                    reasonWhy: { type: Type.STRING },
+                    workaroundRider: { type: Type.STRING },
+                  },
+                  required: ["title", "reasonWhy"],
+                },
+              },
+              hiddenTrapsAndGotchas: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    clauseRef: { type: Type.STRING },
+                    howCarriersTrickYou: { type: Type.STRING },
+                    howAequitasFixesIt: { type: Type.STRING },
+                  },
+                  required: ["clauseRef", "howCarriersTrickYou", "howAequitasFixesIt"],
+                },
+              },
+              transparencyScore: { type: Type.NUMBER, description: "1 to 100" },
             },
+            required: ["plainEnglishSummary", "coveredItems", "uncoveredExclusions", "hiddenTrapsAndGotchas", "transparencyScore"],
           },
-        });
+        },
+      });
 
-        const parsed = JSON.parse(response.text || "{}");
-        if (parsed && parsed.plainEnglishSummary) {
-          return res.json({ success: true, translation: parsed });
-        }
-      } catch (aiErr) {
-        console.warn("[Policy Translate] Gemini AI unavailable or busy, using deterministic translation fallback:", aiErr);
+      if (parsed && parsed.plainEnglishSummary) {
+        return res.json({ success: true, translation: parsed });
       }
     }
 
@@ -329,12 +331,11 @@ Respond strictly in JSON matching the schema.`;
 // 4. Autonomous Agentic Customer Service & Policy Endorsement Execution
 app.post("/api/agent/command", async (req, res) => {
   try {
-    const { userMessage, activePolicyState, chatHistory } = req.body;
+    const { userMessage, activePolicyState } = req.body;
     const ai = getGeminiClient();
 
     if (ai) {
-      try {
-        const prompt = `You are Aequitas Autonomous Policy Agent, an authorized AI agent capable of executing real policy updates, endorsements, billing adjustments, deductible tuning, P2P pool invites, and live giveback charity allocations.
+      const prompt = `You are Aequitas Autonomous Policy Agent, an authorized AI agent capable of executing real policy updates, endorsements, billing adjustments, deductible tuning, P2P pool invites, and live giveback charity allocations.
 
 Current Policy State:
 ${JSON.stringify(activePolicyState || {})}
@@ -344,40 +345,35 @@ User Command: "${userMessage}"
 Determine the exact intent, formulate a clear plain-language response, and output executable action payload if the user requested any change (such as MODIFY_DEDUCTIBLE, ADD_PROPERTY_RIDER, PAUSE_COVERAGE, SWITCH_PAYMENT_OPEN_BANKING, CREATE_P2P_POOL, SET_GIVEBACK_CHARITY, EXPLAIN_COVERAGE).
 Respond strictly in JSON matching the schema.`;
 
-        const response = await ai.models.generateContent({
-          model: "gemini-3.8-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                replyText: { type: Type.STRING },
-                actionType: { type: Type.STRING, description: "NONE, MODIFY_DEDUCTIBLE, ADD_PROPERTY_RIDER, PAUSE_COVERAGE, SWITCH_PAYMENT_METHOD, SET_GIVEBACK_CHARITY, UPDATE_BENEFICIARY" },
-                actionPayload: {
-                  type: Type.OBJECT,
-                  properties: {
-                    newDeductible: { type: Type.NUMBER },
-                    newPremiumDeltaMonthly: { type: Type.NUMBER },
-                    riderAdded: { type: Type.STRING },
-                    riderValue: { type: Type.NUMBER },
-                    statusMessage: { type: Type.STRING },
-                  },
+      const parsed = await safeGenerateContent(ai, {
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              replyText: { type: Type.STRING },
+              actionType: { type: Type.STRING, description: "NONE, MODIFY_DEDUCTIBLE, ADD_PROPERTY_RIDER, PAUSE_COVERAGE, SWITCH_PAYMENT_METHOD, SET_GIVEBACK_CHARITY, UPDATE_BENEFICIARY" },
+              actionPayload: {
+                type: Type.OBJECT,
+                properties: {
+                  newDeductible: { type: Type.NUMBER },
+                  newPremiumDeltaMonthly: { type: Type.NUMBER },
+                  riderAdded: { type: Type.STRING },
+                  riderValue: { type: Type.NUMBER },
+                  statusMessage: { type: Type.STRING },
                 },
-                userSurplusImpact: { type: Type.STRING },
-                estimatedAnnualSavings: { type: Type.NUMBER },
               },
-              required: ["replyText", "actionType"],
+              userSurplusImpact: { type: Type.STRING },
+              estimatedAnnualSavings: { type: Type.NUMBER },
             },
+            required: ["replyText", "actionType"],
           },
-        });
+        },
+      });
 
-        const parsed = JSON.parse(response.text || "{}");
-        if (parsed && parsed.replyText) {
-          return res.json({ success: true, result: parsed });
-        }
-      } catch (aiErr) {
-        console.warn("[Agent Command] Gemini AI unavailable or busy, using deterministic command fallback:", aiErr);
+      if (parsed && parsed.replyText) {
+        return res.json({ success: true, result: parsed });
       }
     }
 
@@ -430,8 +426,7 @@ app.post("/api/insurance/compare", async (req, res) => {
     const ai = getGeminiClient();
 
     if (ai) {
-      try {
-        const prompt = `You are an expert actuarial comparator and rate analyst for insurance across Auto, Home, Renters, and Life.
+      const prompt = `You are an expert actuarial comparator and rate analyst for insurance across Auto, Home, Renters, and Life.
 Given user's request:
 - Insurance Line: ${insuranceType || "Auto"}
 - User Target Monthly Budget: $${userBudgetMonthly || 50}/mo
@@ -452,71 +447,66 @@ Deconstruct each carrier's price into:
 
 Respond strictly in JSON matching the schema.`;
 
-        const response = await ai.models.generateContent({
-          model: "gemini-3.8-flash",
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                marketAverageMonthly: { type: Type.NUMBER },
-                cheapestMonthly: { type: Type.NUMBER },
-                userBudget: { type: Type.NUMBER },
-                budgetAffordabilityAnalysis: { type: Type.STRING },
-                carriers: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      id: { type: Type.STRING },
-                      name: { type: Type.STRING },
-                      rating: { type: Type.NUMBER },
-                      financialGrade: { type: Type.STRING },
-                      pureActuarialLoss: { type: Type.NUMBER },
-                      marketingAndCommissionToll: { type: Type.NUMBER },
-                      corporateMargin: { type: Type.NUMBER },
-                      netMonthlyRate: { type: Type.NUMBER },
-                      withinBudget: { type: Type.BOOLEAN },
-                      budgetDiffMonthly: { type: Type.NUMBER },
-                      coverageSummary: { type: Type.STRING },
-                      claimSpeed: { type: Type.STRING },
-                      hiddenTrap: { type: Type.STRING },
-                      isCheapest: { type: Type.BOOLEAN },
-                      isBestValue: { type: Type.BOOLEAN },
-                      isZeroMarginProtocol: { type: Type.BOOLEAN },
-                      discountTags: {
-                        type: Type.ARRAY,
-                        items: { type: Type.STRING }
-                      }
-                    },
-                    required: ["id", "name", "rating", "pureActuarialLoss", "marketingAndCommissionToll", "corporateMargin", "netMonthlyRate", "withinBudget", "budgetDiffMonthly", "coverageSummary", "claimSpeed", "hiddenTrap"]
-                  }
-                },
-                topBudgetHacks: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      tactic: { type: Type.STRING },
-                      monthlySavings: { type: Type.NUMBER },
-                      howToApply: { type: Type.STRING }
-                    },
-                    required: ["tactic", "monthlySavings", "howToApply"]
-                  }
+      const parsed = await safeGenerateContent(ai, {
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              marketAverageMonthly: { type: Type.NUMBER },
+              cheapestMonthly: { type: Type.NUMBER },
+              userBudget: { type: Type.NUMBER },
+              budgetAffordabilityAnalysis: { type: Type.STRING },
+              carriers: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    id: { type: Type.STRING },
+                    name: { type: Type.STRING },
+                    rating: { type: Type.NUMBER },
+                    financialGrade: { type: Type.STRING },
+                    pureActuarialLoss: { type: Type.NUMBER },
+                    marketingAndCommissionToll: { type: Type.NUMBER },
+                    corporateMargin: { type: Type.NUMBER },
+                    netMonthlyRate: { type: Type.NUMBER },
+                    withinBudget: { type: Type.BOOLEAN },
+                    budgetDiffMonthly: { type: Type.NUMBER },
+                    coverageSummary: { type: Type.STRING },
+                    claimSpeed: { type: Type.STRING },
+                    hiddenTrap: { type: Type.STRING },
+                    isCheapest: { type: Type.BOOLEAN },
+                    isBestValue: { type: Type.BOOLEAN },
+                    isZeroMarginProtocol: { type: Type.BOOLEAN },
+                    discountTags: {
+                      type: Type.ARRAY,
+                      items: { type: Type.STRING }
+                    }
+                  },
+                  required: ["id", "name", "rating", "pureActuarialLoss", "marketingAndCommissionToll", "corporateMargin", "netMonthlyRate", "withinBudget", "budgetDiffMonthly", "coverageSummary", "claimSpeed", "hiddenTrap"]
                 }
               },
-              required: ["marketAverageMonthly", "cheapestMonthly", "budgetAffordabilityAnalysis", "carriers", "topBudgetHacks"]
-            }
+              topBudgetHacks: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    tactic: { type: Type.STRING },
+                    monthlySavings: { type: Type.NUMBER },
+                    howToApply: { type: Type.STRING }
+                  },
+                  required: ["tactic", "monthlySavings", "howToApply"]
+                }
+              }
+            },
+            required: ["marketAverageMonthly", "cheapestMonthly", "budgetAffordabilityAnalysis", "carriers", "topBudgetHacks"]
           }
-        });
-
-        const parsed = JSON.parse(response.text || "{}");
-        if (parsed && Array.isArray(parsed.carriers) && parsed.carriers.length > 0) {
-          return res.json({ success: true, data: parsed });
         }
-      } catch (aiErr) {
-        console.warn("[Comparative Pricing] Gemini AI unavailable or busy, using deterministic actuarial fallback:", aiErr);
+      });
+
+      if (parsed && Array.isArray(parsed.carriers) && parsed.carriers.length > 0) {
+        return res.json({ success: true, data: parsed });
       }
     }
 
