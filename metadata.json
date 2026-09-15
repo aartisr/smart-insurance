@@ -1,0 +1,6 @@
+{
+  "name": "Aequitas - Nobel-Tier Hyper-Frictionless Insurance Engine",
+  "description": "Zero-margin operating overhead insurance platform featuring 3-question enriched underwriting, real-time IoT risk deflation, 3-second agentic AI claims triage, parametric settlement, plain-language policy translation, and P2P risk pooling.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
