@@ -46,6 +46,7 @@ import { ComparativePricingEngine } from './components/ModuleComparator/Comparat
 import { CommissionPayoutStudio } from './components/ModuleCommissions/CommissionPayoutStudio';
 import { ExpressFastTrackModal } from './components/ExpressWorkflow/ExpressFastTrackModal';
 import { ExpressQuickBar } from './components/ExpressWorkflow/ExpressQuickBar';
+import { AnalyticsStatusModal } from './components/AnalyticsStatusModal';
 
 import { INITIAL_POLICY, INITIAL_CLAIMS, INITIAL_IOT_DEVICES } from './data/mockData';
 import { UserPolicy, ClaimRecord, IoTDeviceStream, CarrierQuote, UserAffordabilityProfile } from './types';
@@ -58,6 +59,7 @@ export default function App() {
   // Express Fast-Track Modal State
   const [isExpressModalOpen, setIsExpressModalOpen] = useState<boolean>(false);
   const [expressModalMode, setExpressModalMode] = useState<'instant_bind' | 'instant_claim' | 'rate_match'>('instant_bind');
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState<boolean>(false);
 
   const [policy, setPolicy] = useState<UserPolicy>(INITIAL_POLICY);
   const [claimsHistory, setClaimsHistory] = useState<ClaimRecord[]>(INITIAL_CLAIMS);
@@ -249,6 +251,7 @@ export default function App() {
         surplusWalletBalance={policy.givebackSurplusAccrued}
         monthlyPremium={policy.activeMonthlyPremium}
         onOpenExpressModal={handleOpenExpressModal}
+        onOpenAnalytics={() => setIsAnalyticsModalOpen(true)}
       />
 
       {/* Ultra-Fast Workflow Quick Bar (Target: < 30 seconds on site) */}
@@ -423,6 +426,14 @@ export default function App() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-600">
+            <button
+              type="button"
+              onClick={() => setIsAnalyticsModalOpen(true)}
+              className="text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 font-mono transition-colors"
+            >
+              <Activity className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Telemetry &amp; Heatmaps</span>
+            </button>
             <span className="text-emerald-700 font-medium flex items-center gap-1">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               100% Audited Giveback
@@ -440,6 +451,11 @@ export default function App() {
         onUpdatePolicy={handleUpdatePolicy}
         onAddClaim={handleClaimSettled}
         defaultMode={expressModalMode}
+      />
+      {/* PostHog & Microsoft Clarity Diagnostic Modal */}
+      <AnalyticsStatusModal
+        isOpen={isAnalyticsModalOpen}
+        onClose={() => setIsAnalyticsModalOpen(false)}
       />
     </div>
   );

@@ -127,6 +127,30 @@ class AnalyticsManager {
       posthog.capture('$pageview', { $current_url: window.location.href, path: pagePath });
     }
   }
+
+  public isConfigured() {
+    return {
+      clarity: this.isClarityInitialized,
+      posthog: this.isPostHogInitialized,
+      clarityKeyConfigured: Boolean(import.meta.env.VITE_CLARITY_PROJECT_ID || (typeof window !== 'undefined' && (window as unknown as { __CLARITY_ID?: string }).__CLARITY_ID)),
+      posthogKeyConfigured: Boolean(import.meta.env.VITE_POSTHOG_KEY),
+    };
+  }
+
+  /**
+   * Dynamically reconfigure or apply keys from settings
+   */
+  public configure(config: { clarityId?: string; posthogKey?: string; posthogHost?: string }) {
+    if (config.clarityId) {
+      if (typeof window !== 'undefined') {
+        (window as unknown as { __CLARITY_ID?: string }).__CLARITY_ID = config.clarityId;
+      }
+      this.initClarity(config.clarityId);
+    }
+    if (config.posthogKey) {
+      this.initPostHog(config.posthogKey, config.posthogHost);
+    }
+  }
 }
 
 export const analytics = new AnalyticsManager();

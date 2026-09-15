@@ -25,6 +25,7 @@ interface HeaderProps {
   surplusWalletBalance?: number;
   monthlyPremium?: number;
   onOpenExpressModal?: (mode: 'instant_bind' | 'instant_claim' | 'rate_match') => void;
+  onOpenAnalytics?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -34,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
   surplusWalletBalance,
   monthlyPremium,
   onOpenExpressModal,
+  onOpenAnalytics,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const currentPremium = monthlyPremium ?? policy?.activeMonthlyPremium ?? 43.60;
@@ -138,6 +140,19 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
           </div>
+
+          {onOpenAnalytics && (
+            <button
+              type="button"
+              id="btn-header-telemetry"
+              onClick={onOpenAnalytics}
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 text-indigo-700 text-xs font-mono font-medium transition-all cursor-pointer shadow-xs"
+              title="PostHog & Microsoft Clarity Diagnostic Console"
+            >
+              <Activity className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Telemetry</span>
+            </button>
+          )}
 
           {/* Mobile Navigation Toggle Button */}
           <button
