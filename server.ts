@@ -384,11 +384,31 @@ Respond strictly in JSON matching the schema.`;
     let actionPayload: any = {};
     let estimatedAnnualSavings = 0;
 
-    if (lower.includes("deductible")) {
+    if (lower.includes("deductible") || lower.includes("waiver") || lower.includes("glass")) {
       actionType = "MODIFY_DEDUCTIBLE";
-      replyText = "I have updated your deductible preference. By optimizing your deductible from $500 to $1,500, your monthly rate drops by $18.40/mo ($220.80/year saved), passing 100% of the risk reserve directly into your cash giveback balance.";
-      actionPayload = { newDeductible: 1500, newPremiumDeltaMonthly: -18.4, statusMessage: "Deductible updated on policy ledger" };
+      replyText = "I have confirmed your Zero-Deductible Waiver & safe-driver protections. High-frequency windshield chips and minor glass repairs carry a $0 deductible, while optimizing your base deductible to $1,500 saves $220.80/year in net premiums.";
+      actionPayload = { newDeductible: 1500, newPremiumDeltaMonthly: -18.4, statusMessage: "$0 Glass Waiver active + deductible optimized" };
       estimatedAnnualSavings = 220.8;
+    } else if (lower.includes("rcv") || lower.includes("acv") || lower.includes("depreciation") || lower.includes("replacement cost")) {
+      actionType = "UPDATE_COVERAGE_FEATURE";
+      replyText = "Your policy is configured with 100% Guaranteed Replacement Cost Value (RCV). In the event of a damaged roof, electronics, or personal property, Aequitas pays the full cost for brand-new replacement items with zero deduction for age or depreciation.";
+      actionPayload = { feature: "RCV_ENABLED", statusMessage: "100% Replacement Cost Value Guaranteed" };
+      estimatedAnnualSavings = 1450.0;
+    } else if (lower.includes("rebuild") || lower.includes("disaster") || lower.includes("surge") || lower.includes("extended")) {
+      actionType = "UPDATE_COVERAGE_FEATURE";
+      replyText = "I have activated the +25% Extended Replacement Rebuilding Surge Buffer on your dwelling limit. If a widespread natural disaster creates regional contractor or material cost spikes, your structure cap automatically extends up to +$112,500 above baseline.";
+      actionPayload = { feature: "EXTENDED_REBUILDING_SURGE", bufferPercent: 25, statusMessage: "+25% Disaster Rebuilding Surge Buffer Enabled" };
+      estimatedAnnualSavings = 380.0;
+    } else if (lower.includes("umbrella") || lower.includes("liability") || lower.includes("uim") || lower.includes("uninsured")) {
+      actionType = "UPDATE_COVERAGE_FEATURE";
+      replyText = "Your policy includes High-Impact Liability & $1M Umbrella Compatibility Bridge, as well as 100% Uninsured / Underinsured Motorist (UM/UIM) coverage to shield your savings and future income from uninsured drivers and litigious third-party claims.";
+      actionPayload = { feature: "UM_UIM_AND_UMBRELLA_BRIDGE", limit: 1000000, statusMessage: "$1M Umbrella Bridge & UM/UIM Shield Verified" };
+      estimatedAnnualSavings = 120.0;
+    } else if (lower.includes("bundle") || lower.includes("multi-policy") || lower.includes("single deductible")) {
+      actionType = "UPDATE_COVERAGE_FEATURE";
+      replyText = "Multi-Policy Loyalty Bundling is active! You receive an instant 15% discount on combined premiums and benefit from our Single Deductible Compound Shield (e.g. paying only 1 deductible if a severe hail storm damages both your roof and vehicle).";
+      actionPayload = { feature: "MULTI_POLICY_SINGLE_DEDUCTIBLE", discountPercent: 15, statusMessage: "15% Bundle Discount + Single Deductible Active" };
+      estimatedAnnualSavings = 180.0;
     } else if (lower.includes("rider") || lower.includes("bike") || lower.includes("laptop") || lower.includes("jewelry") || lower.includes("watch")) {
       actionType = "ADD_PROPERTY_RIDER";
       replyText = "I've added scheduled micro-coverage rider for your specified high-value item with worldwide zero-deductible loss protection. Your verified IoT security score offsets 70% of the rider cost.";
@@ -400,7 +420,7 @@ Respond strictly in JSON matching the schema.`;
       actionPayload = { statusMessage: "Zero-fee direct bank rail activated" };
       estimatedAnnualSavings = 28.5;
     } else {
-      replyText = `Understood! I've reviewed your active Aequitas policy parameters. All systems are operating smoothly under the 20% fixed operational cost rule. What would you like to adjust?`;
+      replyText = `Understood! I've reviewed your active Aequitas policy parameters with all 10 Core Value-Add Features (RCV, Extended Rebuilding, Deductible Waivers, Umbrella Bridge, UM/UIM, and Single Deductible Bundles) active under the 20% fixed operational cost rule. What would you like to adjust?`;
     }
 
     return res.json({

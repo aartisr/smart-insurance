@@ -320,11 +320,11 @@ export const ComparativePricingEngine: React.FC<ComparativePricingEngineProps> =
       </div>
 
       {/* Main Tabs (Comparator vs Side-by-Side vs Budget Optimizer) */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-3">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-3 overflow-x-auto scrollbar-none">
         <button
           type="button"
           onClick={() => setActiveTab('comparator')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 min-h-[40px] ${
             activeTab === 'comparator'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
@@ -336,7 +336,7 @@ export const ComparativePricingEngine: React.FC<ComparativePricingEngineProps> =
         <button
           type="button"
           onClick={() => setActiveTab('head_to_head')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 min-h-[40px] ${
             activeTab === 'head_to_head'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
@@ -348,7 +348,7 @@ export const ComparativePricingEngine: React.FC<ComparativePricingEngineProps> =
         <button
           type="button"
           onClick={() => setActiveTab('budget_optimizer')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 min-h-[40px] ${
             activeTab === 'budget_optimizer'
               ? 'bg-slate-900 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'

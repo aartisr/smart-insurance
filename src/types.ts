@@ -11,6 +11,24 @@ export type NavigationTab =
   | 'agent_service'
   | 'monetization';
 
+export interface ValueAddPolicyFeature {
+  id: string;
+  category: 'core' | 'high_impact' | 'service';
+  name: string;
+  shortTag: string;
+  description: string;
+  userBenefit: string;
+  monthlyCost: number;
+  isEnabled: boolean;
+  configurableOption?: {
+    type: 'toggle' | 'select' | 'slider';
+    value: string | number;
+    options?: { label: string; value: string | number; costDelta: number }[];
+  };
+  coverageImpact: string;
+  antiTrapComparison: string; // What traditional carriers hide vs Aequitas
+}
+
 export interface UserPolicy {
   id: string;
   policyHolder: string;
@@ -31,6 +49,18 @@ export interface UserPolicy {
   createdAt: string;
   selectedCharity: string;
   activeRiders: { id: string; name: string; costMonthly: number; coverageAmount: number }[];
+  valueAddFeatures?: {
+    rcvEnabled: boolean; // Replacement Cost Value (vs ACV)
+    extendedRebuildingPercent: number; // 0, 25%, 50% Guaranteed Replacement
+    deductibleWaiverActive: boolean; // Glass / safe driver / zero-deductible accident forgiveness
+    autoRestoreBenefits: boolean; // Health auto reset
+    umbrellaCompatibilityLimit: number; // $1M, $2M, $5M high liability
+    uninsuredMotoristEndorsement: boolean; // UM/UIM
+    noRoomRentCapping: boolean; // Eliminates room-rent caps in medical
+    inflationGuardPercent: number; // e.g., 4% to 8% annual auto inflation adjustment
+    directVendorBilling247: boolean; // Direct contractor/hospital payment + 24/7 digital photo estimate
+    multiPolicyLoyaltyBundling: boolean; // Single deductible multi-claim consolidation + discount
+  };
 }
 
 export interface IoTDeviceStream {

@@ -37,11 +37,14 @@ import { CryptographicFraudDefense } from './components/ModuleClaims/Cryptograph
 import { CoverageSlider } from './components/ModuleTransparency/CoverageSlider';
 import { PolicyTranslator } from './components/ModuleTransparency/PolicyTranslator';
 import { P2PRiskPooling } from './components/ModuleTransparency/P2PRiskPooling';
+import { ValueAddFeaturesStudio } from './components/ModuleTransparency/ValueAddFeaturesStudio';
 
 import { AgenticCustomerService } from './components/ModuleTechStack/AgenticCustomerService';
 import { PaymentOrchestration } from './components/ModuleTechStack/PaymentOrchestration';
 import { MonetizationTiers } from './components/ModuleTechStack/MonetizationTiers';
 import { ComparativePricingEngine } from './components/ModuleComparator/ComparativePricingEngine';
+import { ExpressFastTrackModal } from './components/ExpressWorkflow/ExpressFastTrackModal';
+import { ExpressQuickBar } from './components/ExpressWorkflow/ExpressQuickBar';
 
 import { INITIAL_POLICY, INITIAL_CLAIMS, INITIAL_IOT_DEVICES } from './data/mockData';
 import { UserPolicy, ClaimRecord, IoTDeviceStream, CarrierQuote, UserAffordabilityProfile } from './types';
@@ -49,6 +52,10 @@ import { UserPolicy, ClaimRecord, IoTDeviceStream, CarrierQuote, UserAffordabili
 export default function App() {
   const [activeModule, setActiveModule] = useState<'underwriting' | 'claims' | 'transparency' | 'cost_elimination' | 'comparator'>('comparator');
   const [activeSubTab, setActiveSubTab] = useState<string>('compare_rates');
+  
+  // Express Fast-Track Modal State
+  const [isExpressModalOpen, setIsExpressModalOpen] = useState<boolean>(false);
+  const [expressModalMode, setExpressModalMode] = useState<'instant_bind' | 'instant_claim' | 'rate_match'>('instant_bind');
 
   const [policy, setPolicy] = useState<UserPolicy>(INITIAL_POLICY);
   const [claimsHistory, setClaimsHistory] = useState<ClaimRecord[]>(INITIAL_CLAIMS);
@@ -57,6 +64,75 @@ export default function App() {
   // Policy update handler
   const handleUpdatePolicy = (updated: Partial<UserPolicy>) => {
     setPolicy((prev) => ({ ...prev, ...updated }));
+  };
+
+  // Open Express Fast Track Modal in specific mode
+  const handleOpenExpressModal = (mode: 'instant_bind' | 'instant_claim' | 'rate_match') => {
+    setExpressModalMode(mode);
+    setIsExpressModalOpen(true);
+  };
+
+  // 1-Click Fast Preset Application across the entire policy
+  const handleApplyPreset = (presetName: 'optimal' | 'budget' | 'fortress') => {
+    if (presetName === 'optimal') {
+      setPolicy((prev) => ({
+        ...prev,
+        activeMonthlyPremium: 43.60,
+        baseMonthlyPremium: 78.00,
+        deductible: 1000,
+        valueAddFeatures: {
+          rcvEnabled: true,
+          extendedRebuildingPercent: 25,
+          deductibleWaiverActive: true,
+          autoRestoreBenefits: true,
+          umbrellaCompatibilityLimit: 1000000,
+          uninsuredMotoristEndorsement: true,
+          noRoomRentCapping: true,
+          inflationGuardPercent: 5,
+          directVendorBilling247: true,
+          multiPolicyLoyaltyBundling: true,
+        },
+      }));
+    } else if (presetName === 'budget') {
+      setPolicy((prev) => ({
+        ...prev,
+        activeMonthlyPremium: 29.80,
+        baseMonthlyPremium: 65.00,
+        deductible: 2000,
+        valueAddFeatures: {
+          rcvEnabled: true,
+          extendedRebuildingPercent: 10,
+          deductibleWaiverActive: false,
+          autoRestoreBenefits: true,
+          umbrellaCompatibilityLimit: 500000,
+          uninsuredMotoristEndorsement: true,
+          noRoomRentCapping: true,
+          inflationGuardPercent: 3,
+          directVendorBilling247: true,
+          multiPolicyLoyaltyBundling: true,
+        },
+      }));
+    } else if (presetName === 'fortress') {
+      setPolicy((prev) => ({
+        ...prev,
+        activeMonthlyPremium: 62.40,
+        baseMonthlyPremium: 110.00,
+        deductible: 500,
+        dwellingLimit: 750000,
+        valueAddFeatures: {
+          rcvEnabled: true,
+          extendedRebuildingPercent: 50,
+          deductibleWaiverActive: true,
+          autoRestoreBenefits: true,
+          umbrellaCompatibilityLimit: 2000000,
+          uninsuredMotoristEndorsement: true,
+          noRoomRentCapping: true,
+          inflationGuardPercent: 8,
+          directVendorBilling247: true,
+          multiPolicyLoyaltyBundling: true,
+        },
+      }));
+    }
   };
 
   // Bind quote from comparative pricing engine
@@ -139,6 +215,7 @@ export default function App() {
     ],
     transparency: [
       { id: 'slider', label: 'Coverage vs. Premium Slider', icon: <Sliders className="w-3.5 h-3.5" /> },
+      { id: 'value_features', label: '10 Built-In Value-Add Protections', icon: <Sparkles className="w-3.5 h-3.5" /> },
       { id: 'translator', label: 'Jargon-Free Policy Translator', icon: <FileText className="w-3.5 h-3.5" /> },
       { id: 'pooling', label: 'P2P Risk Pools & Dividends', icon: <Users className="w-3.5 h-3.5" /> },
     ],
@@ -165,12 +242,20 @@ export default function App() {
         policy={policy}
         surplusWalletBalance={policy.givebackSurplusAccrued}
         monthlyPremium={policy.activeMonthlyPremium}
+        onOpenExpressModal={handleOpenExpressModal}
+      />
+
+      {/* Ultra-Fast Workflow Quick Bar (Target: < 30 seconds on site) */}
+      <ExpressQuickBar
+        onOpenExpressModal={handleOpenExpressModal}
+        onApplyPreset={handleApplyPreset}
+        activePremium={policy.activeMonthlyPremium}
       />
 
       {/* Main Sub-Navigation Bar */}
-      <div className="border-b border-slate-200/90 bg-white/80 backdrop-blur sticky top-[73px] z-30 shadow-2xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4 overflow-x-auto scrollbar-none">
-          <div className="flex items-center gap-1 sm:gap-2">
+      <div className="border-b border-slate-200/90 bg-white/90 backdrop-blur shadow-2xs">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between gap-2 sm:gap-4 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {subTabsMap[activeModule]?.map((tab) => {
               const isActive = activeSubTab === tab.id;
               return (
@@ -179,7 +264,7 @@ export default function App() {
                   id={`subtab-${tab.id}`}
                   type="button"
                   onClick={() => setActiveSubTab(tab.id)}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono transition-all whitespace-nowrap cursor-pointer ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-mono transition-all whitespace-nowrap cursor-pointer min-h-[36px] ${
                     isActive
                       ? 'bg-teal-50 text-teal-800 border border-teal-300/80 shadow-xs font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
@@ -192,7 +277,7 @@ export default function App() {
             })}
           </div>
 
-          <div className="hidden lg:flex items-center gap-3 text-[11px] font-mono text-slate-500">
+          <div className="hidden lg:flex items-center gap-3 text-[11px] font-mono text-slate-500 shrink-0">
             <span className="flex items-center gap-1.5 text-emerald-700 font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               Live Node v2026.1.0
@@ -204,7 +289,7 @@ export default function App() {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* MODULE 0: Comparative Pricing & Affordability */}
         {activeModule === 'comparator' && (
           <div>
@@ -272,6 +357,12 @@ export default function App() {
                 onUpdatePolicy={handleUpdatePolicy}
               />
             )}
+            {activeSubTab === 'value_features' && (
+              <ValueAddFeaturesStudio
+                policy={policy}
+                onUpdatePolicy={handleUpdatePolicy}
+              />
+            )}
             {activeSubTab === 'translator' && <PolicyTranslator />}
             {activeSubTab === 'pooling' && <P2PRiskPooling />}
           </div>
@@ -328,6 +419,15 @@ export default function App() {
           </div>
         </div>
       </footer>
+      {/* Express Fast-Track Modal (<30s Workflow) */}
+      <ExpressFastTrackModal
+        isOpen={isExpressModalOpen}
+        onClose={() => setIsExpressModalOpen(false)}
+        policy={policy}
+        onUpdatePolicy={handleUpdatePolicy}
+        onAddClaim={handleClaimSettled}
+        defaultMode={expressModalMode}
+      />
     </div>
   );
 }

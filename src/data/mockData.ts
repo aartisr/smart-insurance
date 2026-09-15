@@ -1,4 +1,4 @@
-import { UserPolicy, IoTDeviceStream, ClaimRecord, ParametricTrigger, P2PPool, GivebackLedgerEntry, SubscriptionTier } from '../types';
+import { UserPolicy, IoTDeviceStream, ClaimRecord, ParametricTrigger, P2PPool, GivebackLedgerEntry, SubscriptionTier, ValueAddPolicyFeature } from '../types';
 
 export const INITIAL_POLICY: UserPolicy = {
   id: 'POL-AEQ-2026-98102',
@@ -23,7 +23,190 @@ export const INITIAL_POLICY: UserPolicy = {
     { id: 'r1', name: 'High-Value Electronics & Camera Gear', costMonthly: 4.5, coverageAmount: 12000 },
     { id: 'r2', name: 'Parametric Flash Flood & Surface Surge', costMonthly: 3.5, coverageAmount: 50000 },
   ],
+  valueAddFeatures: {
+    rcvEnabled: true,
+    extendedRebuildingPercent: 25,
+    deductibleWaiverActive: true,
+    autoRestoreBenefits: true,
+    umbrellaCompatibilityLimit: 1000000,
+    uninsuredMotoristEndorsement: true,
+    noRoomRentCapping: true,
+    inflationGuardPercent: 5,
+    directVendorBilling247: true,
+    multiPolicyLoyaltyBundling: true,
+  },
 };
+
+export const BUILTIN_VALUE_ADD_FEATURES: ValueAddPolicyFeature[] = [
+  // 1. Core Value-Add Policy Features
+  {
+    id: 'rcv_vs_acv',
+    category: 'core',
+    name: 'Replacement Cost Value (RCV) Protection',
+    shortTag: 'RCV vs ACV',
+    description: 'Pays to repair or replace property with brand new items of like kind and quality without deducting for age, depreciation, or wear-and-tear.',
+    userBenefit: 'Traditional Actual Cash Value (ACV) deducts 40-70% for age on a 5-year-old roof or electronics. RCV guarantees a brand new replacement check.',
+    monthlyCost: 3.20,
+    isEnabled: true,
+    configurableOption: {
+      type: 'select',
+      value: 'RCV',
+      options: [
+        { label: 'Replacement Cost (RCV) - 100% New Replacement', value: 'RCV', costDelta: 3.20 },
+        { label: 'Actual Cash Value (ACV) - Depreciated Payout', value: 'ACV', costDelta: 0.00 },
+      ],
+    },
+    coverageImpact: 'Guaranteed 100% brand-new replacement without depreciation clawback.',
+    antiTrapComparison: 'Legacy insurers silently default to ACV to shortchange claims on electronics, appliances, and roofs by thousands of dollars.',
+  },
+  {
+    id: 'extended_rebuilding',
+    category: 'core',
+    name: 'Guaranteed / Extended Replacement Cost Buffer',
+    shortTag: '+25% to +50% Surge Buffer',
+    description: 'Extends structural rebuilding limits by 25% to 50% above your policy cap if catastrophic surge pricing in construction labor or materials occurs.',
+    userBenefit: 'Protects you after major wildfires, hurricanes, or hailstorms when regional rebuilding contractor prices skyrocket 30-50% overnight.',
+    monthlyCost: 2.80,
+    isEnabled: true,
+    configurableOption: {
+      type: 'select',
+      value: 25,
+      options: [
+        { label: 'Standard Cap (100% Dwelling Limit)', value: 0, costDelta: 0.00 },
+        { label: 'Extended Buffer (+25% Rebuilding Surge)', value: 25, costDelta: 2.80 },
+        { label: 'Guaranteed Maximum (+50% Rebuilding Surge)', value: 50, costDelta: 4.60 },
+      ],
+    },
+    coverageImpact: 'Adds up to $225,000 extra construction capital above baseline dwelling limit.',
+    antiTrapComparison: 'Standard policies strictly cap at nominal dwelling limit, leaving victims short when post-disaster contractor rates surge.',
+  },
+  {
+    id: 'deductible_waivers',
+    category: 'core',
+    name: 'Zero-Deductible Waivers & Forgiveness',
+    shortTag: '$0 Glass & Safe-Driver Waiver',
+    description: 'Waives your deductible entirely for specific high-frequency micro-claims including auto windshield repairs, safe-driver rewards, and first accident forgiveness.',
+    userBenefit: '$0 out-of-pocket on windshield chips, camera recalibrations, and minor incidents after 12 months of clean IoT sensor telematics.',
+    monthlyCost: 1.90,
+    isEnabled: true,
+    configurableOption: {
+      type: 'toggle',
+      value: 'active',
+      options: [
+        { label: 'Enabled ($0 Out-of-Pocket on High-Frequency Claims)', value: 'active', costDelta: 1.90 },
+        { label: 'Standard Deductible Applied', value: 'disabled', costDelta: 0.00 },
+      ],
+    },
+    coverageImpact: 'Saves $500–$1,000 instant out-of-pocket cash on routine repairs.',
+    antiTrapComparison: 'Legacy carriers charge full $500-$1,000 deductible on windshields or small fender benders, wiping out consumer benefit.',
+  },
+  {
+    id: 'auto_restore_benefits',
+    category: 'core',
+    name: 'Automatic Restoration of Benefits',
+    shortTag: '100% Annual Auto-Reset',
+    description: 'Automatically resets your full policy limit if your coverage maximum is exhausted during a single policy year.',
+    userBenefit: 'If a major early-year hospitalization or critical emergency exhausts your annual limit, your coverage limit automatically resets to 100% for subsequent incidents.',
+    monthlyCost: 2.40,
+    isEnabled: true,
+    coverageImpact: 'Prevents mid-year coverage lapse following a major health or recovery claim.',
+    antiTrapComparison: 'Traditional health policies terminate or refuse additional claims once the annual ceiling is breached in month 4 or 5.',
+  },
+
+  // 2. High-Impact Additional Protections & Endorsements
+  {
+    id: 'umbrella_compatibility',
+    category: 'high_impact',
+    name: 'High Liability Limits & Umbrella Compatibility',
+    shortTag: '$1M - $5M Umbrella Bridge',
+    description: 'Substantially higher liability limits protect your net worth and future earnings in litigious claims, offering seamless bridge compatibility with excess umbrella protection.',
+    userBenefit: 'Shields home equity, retirement accounts, and future wages against catastrophic multi-million dollar liability lawsuits at minimal marginal cost.',
+    monthlyCost: 4.10,
+    isEnabled: true,
+    configurableOption: {
+      type: 'select',
+      value: 1000000,
+      options: [
+        { label: '$500,000 Standard Base Liability', value: 500000, costDelta: 0.00 },
+        { label: '$1,000,000 Umbrella Compatible Bridge', value: 1000000, costDelta: 4.10 },
+        { label: '$2,000,000 High-Net-Worth Umbrella Shield', value: 2000000, costDelta: 7.50 },
+      ],
+    },
+    coverageImpact: 'Increases personal liability protection to $1M–$2M+ with unified legal defense.',
+    antiTrapComparison: 'Low $100k state minimums leave personal savings and real estate exposed to wage garnishment after serious accidents.',
+  },
+  {
+    id: 'um_uim_coverage',
+    category: 'high_impact',
+    name: 'Uninsured & Underinsured Motorist (UM/UIM)',
+    shortTag: 'UM/UIM 100% Shield',
+    description: 'Covers medical costs, lost wages, and vehicle property damage if you are struck by a driver who lacks sufficient insurance or flees the scene.',
+    userBenefit: '1 in 7 US drivers on the road have zero insurance. UM/UIM steps in as your private safety net when the at-fault driver has $0 coverage.',
+    monthlyCost: 3.60,
+    isEnabled: true,
+    coverageImpact: 'Up to $250k bodily injury & property payout for hit-and-run / uninsured collisions.',
+    antiTrapComparison: 'Without UM/UIM, victims are stuck paying tens of thousands in out-of-pocket medical bills when hit by an uninsured motorist.',
+  },
+  {
+    id: 'no_room_rent_capping',
+    category: 'high_impact',
+    name: 'No Room-Rent Capping or Procedure Sub-Limits',
+    shortTag: 'Zero Medical Sub-Limits',
+    description: 'Eliminates artificial caps on daily ICU/private room rates or specific surgical procedures, ensuring medical claim payouts aren’t proportionately cut.',
+    userBenefit: 'If ICU or private room charges exceed standard hospital averages, your bill is paid in full without proportionate deduction penalties.',
+    monthlyCost: 2.90,
+    isEnabled: true,
+    coverageImpact: '100% full hospital room bill reimbursement without proportionate tariff deductions.',
+    antiTrapComparison: 'Legacy health plans cap room rent at 1% of sum insured; exceeding it triggers a 40-60% proportionate penalty across the ENTIRE surgery bill.',
+  },
+  {
+    id: 'inflation_guard',
+    category: 'high_impact',
+    name: 'Inflation Rider / Dynamic Inflation Guard',
+    shortTag: 'CPI-Linked Limit Adjustment',
+    description: 'Automatically adjusts coverage limits in real time to match annual economic inflation and construction cost indexes, preventing under-insurance over time.',
+    userBenefit: 'As construction and replacement costs inflate at 4–8% per year, your policy dwelling and personal property limits grow in tandem automatically.',
+    monthlyCost: 1.50,
+    isEnabled: true,
+    configurableOption: {
+      type: 'select',
+      value: 5,
+      options: [
+        { label: 'Off (Fixed Nominal Limits)', value: 0, costDelta: 0.00 },
+        { label: 'Dynamic CPI Auto-Guard (+5%/yr)', value: 5, costDelta: 1.50 },
+        { label: 'High-Inflation Construction Track (+8%/yr)', value: 8, costDelta: 2.40 },
+      ],
+    },
+    coverageImpact: 'Guarantees policy limit increases alongside regional construction inflation indices.',
+    antiTrapComparison: 'Static policies experience severe purchasing power erosion over 3-5 years, causing 40% underinsurance at claim time.',
+  },
+
+  // 3. Value-Add Service Features
+  {
+    id: 'direct_vendor_billing',
+    category: 'service',
+    name: '24/7 Digital Claims & Direct Vendor Billing',
+    shortTag: 'Zero Out-of-Pocket Direct Pay',
+    description: 'Speeds up approval turnarounds via digital photo estimates and eliminates out-of-pocket payments by paying contractors, auto body shops, or hospitals directly.',
+    userBenefit: 'Never front $15,000 on a credit card waiting months for a reimbursement check. Aequitas authorizes and transfers funds directly to vetted contractors.',
+    monthlyCost: 0.00, // Built-in complimentary zero-margin feature
+    isEnabled: true,
+    coverageImpact: 'Direct ACH/FedNow disbursement to authorized restoration and medical providers.',
+    antiTrapComparison: 'Traditional carriers force policyholders to pay cash upfront and wait 60–90 days for paper check reimbursement.',
+  },
+  {
+    id: 'multi_policy_bundling',
+    category: 'service',
+    name: 'Multi-Policy & Loyalty Bundling + Single Deductible',
+    shortTag: 'Single Deductible & -15% Bundle',
+    description: 'Reduces overall insurance costs significantly while consolidating coverage under a single unified deductible in split-claim scenarios (e.g. storm damaging both home and car).',
+    userBenefit: 'If a severe storm damages both your roof and garaged vehicle simultaneously, you pay only ONE single deductible instead of two separate deductibles.',
+    monthlyCost: -6.50, // Net savings discount
+    isEnabled: true,
+    coverageImpact: '15% bundled multi-line discount + single deductible waiver for compound casualty events.',
+    antiTrapComparison: 'Legacy carriers charge you two distinct deductibles ($1,000 for auto + $1,500 for home = $2,500) for the exact same hail storm.',
+  },
+];
 
 export const INITIAL_IOT_DEVICES: IoTDeviceStream[] = [
   {
